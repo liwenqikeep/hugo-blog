@@ -2,3 +2,6 @@
 public
 resources
 .hugo_build.lock
+
+# 源文件目录（不提交）
+content/source/
