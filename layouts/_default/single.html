@@ -20,11 +20,16 @@
 
     <footer class="post-footer">
         {{ with .Params.tags }}
-        <div class="post-tags">
-            <span class="tags-label">标签：</span>
-            {{ range . }}
-            <a href="/tag/{{ . | urlize }}/" class="tag">{{ . }}</a>
-            {{ end }}
+        <div class="post-tags-section">
+            <div class="tags-header">
+                <span class="tags-icon">🏷️</span>
+                <span class="tags-title">标签</span>
+            </div>
+            <div class="tags-list">
+                {{ range . }}
+                <a href="/tag/{{ . | urlize }}/" class="tag">{{ . }}</a>
+                {{ end }}
+            </div>
         </div>
         {{ end }}
     </footer>
