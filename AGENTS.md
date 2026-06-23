@@ -170,3 +170,19 @@ hugo new post/my-article/index.md
 3. **多语言**：使用 `index.zh-cn.md` 后缀
 4. **静态资源**：图片等放在 `static/` 目录
 5. **自定义样式**：编辑 `static/css/style.css`
+
+---
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues。See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+默认标签词汇（needs-triage、needs-info、ready-for-agent、ready-for-human、wontfix）。See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context 结构，CONTEXT.md 在仓库根目录。See `docs/agents/domain.md`.
