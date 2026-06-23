@@ -1,0 +1,22 @@
+<header class="header">
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="{{ .Site.Params.avatar }}" alt="{{ .Site.Title }}" class="nav-avatar">
+                <span class="nav-title">{{ .Site.Title }}</span>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link {{ if .IsHome }}active{{ end }}">首页</a></li>
+                <li><a href="/post/" class="nav-link {{ if eq .Type "post" }}active{{ end }}">文章</a></li>
+                <li><a href="/about/" class="nav-link">关于</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>

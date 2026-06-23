@@ -1,0 +1,323 @@
+/* ==========================================
+   Java 开发者博客样式优化
+   ========================================== */
+
+/* 1. 代码块样式优化 - 更适合阅读代码 */
+.article-content {
+    pre {
+        background: #1e1e1e !important;
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin: 20px 0;
+        overflow-x: auto;
+        font-size: 14px;
+        line-height: 1.6;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace !important;
+            background: transparent !important;
+            color: #d4d4d4;
+            padding: 0;
+            font-size: inherit;
+        }
+    }
+
+    code {
+        background: rgba(0, 120, 212, 0.1);
+        color: #0078d4;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: Consolas, 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+}
+
+/* 2. 文章内容排版优化 */
+.article-content {
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 1.5em;
+        margin-bottom: 0.5em;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    h1 { font-size: 2em; border-bottom: 2px solid var(--accent-color); padding-bottom: 0.3em; }
+    h2 { font-size: 1.6em; border-bottom: 1px solid #eee; padding-bottom: 0.2em; }
+    h3 { font-size: 1.3em; }
+
+    p {
+        line-height: 1.8;
+        margin: 1em 0;
+        text-align: justify;
+    }
+
+    blockquote {
+        border-left: 4px solid #0078d4;
+        background: #f8f9fa;
+        margin: 1.5em 0;
+        padding: 1em 1.5em;
+        border-radius: 0 8px 8px 0;
+
+        p {
+            margin: 0;
+            color: #505050;
+        }
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5em 0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+    }
+
+    ul, ol {
+        padding-left: 1.5em;
+        line-height: 1.8;
+    }
+
+    li {
+        margin: 0.3em 0;
+    }
+}
+
+/* 3. 文章卡片悬停效果 */
+.article-list > article {
+    transition: all 0.3s ease;
+    border-radius: var(--card-border-radius);
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+}
+
+/* 4. 标签样式美化 */
+.tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white !important;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+}
+
+/* 5. 侧边栏美化 */
+.widget {
+    .widget-title {
+        font-weight: 600;
+        color: var(--accent-color);
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+    }
+}
+
+/* 6. 页面过渡动画 */
+main {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 7. 滚动条美化 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+
+    &:hover {
+        background: #a1a1a1;
+    }
+}
+
+/* 9. 首页全屏个人介绍样式 */
+.home-profile {
+    min-height: calc(100vh - var(--main-top-padding) * 2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.profile-container {
+    max-width: 700px;
+    width: 100%;
+    text-align: center;
+}
+
+.avatar-wrapper {
+    margin-bottom: 24px;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--card-background);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+.site-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: var(--card-text-color-main);
+}
+
+.site-subtitle {
+    font-size: 1.2rem;
+    color: var(--body-text-color);
+    margin: 0 0 24px 0;
+}
+
+.social-links {
+    margin-bottom: 32px;
+}
+
+.social-link {
+    font-size: 1.5rem;
+    margin: 0 12px;
+    display: inline-block;
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.2);
+    }
+}
+
+.intro-section {
+    text-align: left;
+    background: var(--card-background);
+    padding: 32px;
+    border-radius: var(--card-border-radius);
+    margin-bottom: 32px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+    h2 {
+        font-size: 1.4rem;
+        margin-top: 0;
+        border: none;
+        padding: 0;
+    }
+
+    h3 {
+        font-size: 1.1rem;
+        color: var(--accent-color);
+        margin-top: 24px;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0;
+    }
+
+    li {
+        padding: 6px 0;
+        color: var(--body-text-color);
+    }
+
+    blockquote {
+        margin: 20px 0 0 0;
+        padding: 16px 20px;
+        border-left: 4px solid var(--accent-color);
+        background: var(--body-background);
+        border-radius: 0 8px 8px 0;
+    }
+}
+
+.nav-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.nav-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--accent-color);
+    color: var(--accent-color-text) !important;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: var(--accent-color-darker);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* 8. 深色模式适配 */
+[data-scheme="dark"] {
+    .article-content {
+        code {
+            background: rgba(86, 156, 214, 0.2);
+            color: #569cd6;
+        }
+
+        blockquote {
+            background: #2d2d2d;
+            border-left-color: #569cd6;
+
+            p {
+                color: #ccc;
+            }
+        }
+
+        table {
+            th {
+                background: #2d2d2d;
+            }
+
+            th, td {
+                border-color: #404040;
+            }
+
+            tr:hover {
+                background: #333;
+            }
+        }
+    }
+}

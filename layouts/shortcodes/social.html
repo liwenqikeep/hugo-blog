@@ -1,0 +1,6 @@
+{{- $key := .Get "key" -}}
+{{- with .Site.Params.social -}}
+{{- with index . $key -}}
+{{ . }}
+{{- end -}}
+{{- end -}}
