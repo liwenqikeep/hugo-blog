@@ -1,0 +1,21 @@
+{{/*
+  Table of Contents partial
+  Usage: {{ partial "toc.html" . }}
+*/}}
+
+{{- if and (gt .WordCount 400) (.Param "toc") -}}
+<aside class="article-toc" id="article-toc">
+    <div class="toc-header">
+        <span class="toc-title">目录</span>
+    </div>
+    <nav id="TableOfContents" class="toc-nav">
+        {{ .TableOfContents }}
+    </nav>
+    <div class="toc-footer">
+        <a href="#" class="back-to-top" id="back-to-top">
+            <span class="back-to-top-icon">↑</span>
+            <span class="back-to-top-text">返回顶部</span>
+        </a>
+    </div>
+</aside>
+{{- end -}}

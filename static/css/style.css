@@ -18,7 +18,7 @@
     --font-sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --font-mono: 'JetBrains Mono', Consolas, 'Courier New', monospace;
     
-    --container-width: 900px;
+    --container-width: 1200px;
     --nav-height: 60px;
 }
 
@@ -782,4 +782,167 @@ img {
 
 [data-theme="dark"] .category-card {
     background: var(--bg-secondary);
+}
+
+/* ==========================================
+   文章目录侧边栏样式
+   ========================================== */
+
+/* 布局容器 */
+.post-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    padding: 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 文章主体 */
+.post-layout .post {
+    flex: 1;
+    min-width: 0;
+    max-width: 600px;
+}
+
+/* 目录侧边栏 */
+.article-toc {
+    width: 200px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--nav-height) + 40px);
+    max-height: calc(100vh - var(--nav-height) - 80px);
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border-color);
+    padding-right: 20px;
+}
+
+/* 目录头部 */
+.toc-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.toc-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 目录导航 */
+.toc-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+}
+
+/* Hugo 生成的 TOC 样式 */
+#TableOfContents {
+    font-size: 0.85rem;
+}
+
+#TableOfContents ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#TableOfContents > ul {
+    border-left: 2px solid var(--border-color);
+    padding-left: 12px;
+}
+
+#TableOfContents li {
+    margin: 8px 0;
+}
+
+#TableOfContents li a {
+    color: var(--text-secondary);
+    display: block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+#TableOfContents li a:hover {
+    color: var(--primary-color);
+    background: var(--bg-secondary);
+}
+
+#TableOfContents li a.active {
+    color: var(--primary-color);
+    background: var(--bg-secondary);
+    font-weight: 500;
+}
+
+/* 二级目录缩进 */
+#TableOfContents ul ul {
+    margin-left: 12px;
+    border-left: 1px dashed var(--border-color);
+    padding-left: 8px;
+}
+
+/* 目录底部 */
+.toc-footer {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.back-to-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-decoration: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.back-to-top:hover {
+    color: var(--primary-color);
+    background: var(--bg-secondary);
+}
+
+.back-to-top-icon {
+    font-size: 1rem;
+}
+
+/* 滚动条样式 */
+.toc-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.toc-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.toc-nav::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 2px;
+}
+
+.toc-nav::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* 移动端隐藏目录 */
+@media (max-width: 1024px) {
+    .article-toc {
+        display: none;
+    }
+    
+    .post-layout {
+        gap: 0;
+    }
 }

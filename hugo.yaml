@@ -14,10 +14,17 @@ permalinks:
     category: /category/:slug/
     tag: /tag/:slug/
 
+markup:
+  tableOfContents:
+    startLevel: 2
+    endLevel: 3
+    ordered: false
+
 params:
     author: Liwenqi
     description: 开发工程师 | 技术分享
     avatar: /img/avatar.png
+    toc: true
     
     social:
         github: https://github.com/zhuanzhu-li
