@@ -1,5 +1,5 @@
 ---
-title: 关于我
+title: About
 menu:
     main: 
         weight: -90
@@ -31,7 +31,9 @@ menu:
 
 ### 联系我
 
-- GitHub: [{{< social "github" >}}]({{< social "github" >}})
-- Email: {{< social "email" >}}
+| 平台 | 链接 |
+|------|------|
+| 💻 GitHub | <https://github.com/zhuanzhu-li> |
+| 📧 Email | <liwenqikeep@foxmail.com> |
 
 > 📖 记录学习心得，分享技术经验，欢迎交流探讨！

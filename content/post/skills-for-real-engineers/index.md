@@ -10,7 +10,7 @@ tags: ["AI 编程", "Agent", "工程技能"]
 
 [![skills.sh](https://skills.sh/b/mattpocock/skills)](https://skills.sh/mattpocock/skills)
 
-这是 Matt Pocock 每天使用的 AI Agent 技能库，用于完成真正的工程工作——而不是"感觉编程"。
+这是 Matt Pocock 每天使用的 AI Agent 技能库，用于完成真正的工程工作——而不是感觉编程。
 
 开发真正的应用程序很难。GSD、BMAD 和 Spec-Kit 等方法试图通过掌控流程来提供帮助。但这样做会剥夺你的控制权，并使过程中的 bug 难以解决。
 

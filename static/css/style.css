@@ -283,6 +283,10 @@ img {
     font-size: 0.8rem;
 }
 
+.post-category a {
+    color: white;
+}
+
 .post-card .post-title {
     font-size: 1.3rem;
     margin-bottom: 12px;
