@@ -803,12 +803,12 @@ img {
 .post-layout .post {
     flex: 1;
     min-width: 0;
-    max-width: 600px;
+    max-width: 800px;
 }
 
 /* 目录侧边栏 */
 .article-toc {
-    width: 200px;
+    width: 350px;
     flex-shrink: 0;
     position: sticky;
     top: calc(var(--nav-height) + 40px);

@@ -173,6 +173,34 @@ hugo new post/my-article/index.md
 
 ---
 
+## 文章链接规范
+
+在文章中引用其他文章时，必须使用 Hugo 的 `relref` shortcode 语法：
+
+```markdown
+# ✅ 正确格式
+[文章标题]({{< relref "post/article-slug" >}})
+
+# ❌ 错误格式
+[文章标题](/post/article-slug/)
+[文章标题](post/article-slug/)
+```
+
+**示例**：
+
+```markdown
+> 📚 **推荐阅读**
+> - [Java 集合框架全景图]({{< relref "post/java-collections-01" >}})
+> - [ArrayList 原理与扩容]({{< relref "post/java-collections-02" >}})
+```
+
+**注意事项**：
+- 路径是相对于 `content/` 目录的路径
+- 不需要包含文件扩展名 `.md`
+- 系列文章之间应相互添加相关阅读链接
+
+---
+
 ## Agent skills
 
 ### Issue tracker
