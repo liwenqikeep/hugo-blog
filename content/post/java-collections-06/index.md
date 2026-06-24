@@ -5,7 +5,9 @@ draft: false
 categories: ["Java"]
 tags: ["HashMap", "哈希", "hashCode", "put", "get"]
 series: ["Java集合系列"]
-toc: true
+[params.toc]
+  startLevel = 2
+  endLevel = 3
 ---
 
 ## 前言

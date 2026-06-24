@@ -5,7 +5,9 @@ draft: false
 categories: ["Java"]
 tags: ["集合选型", "实战", "性能优化", "踩坑汇总"]
 series: ["Java集合系列"]
-toc: true
+[params.toc]
+  startLevel = 2
+  endLevel = 3
 ---
 
 ## 前言

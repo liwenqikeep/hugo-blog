@@ -5,7 +5,9 @@ draft: false
 categories: ["Java"]
 tags: ["ArrayList", "LinkedList", "性能对比", "选型"]
 series: ["Java集合系列"]
-toc: true
+[params.toc]
+  startLevel = 2
+  endLevel = 3
 ---
 
 ## 前言
