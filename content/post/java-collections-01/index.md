@@ -5,6 +5,7 @@ draft: false
 categories: ["Java"]
 tags: ["Java集合", "集合框架", "Collection", "Map"]
 series: ["Java集合系列"]
+toc: true
 ---
 
 ## 前言

@@ -5,6 +5,7 @@ draft: false
 categories: ["Java"]
 tags: ["ArrayList", "集合框架", "扩容机制", "源码分析"]
 series: ["Java集合系列"]
+toc: true
 ---
 
 ## 前言

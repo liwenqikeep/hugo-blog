@@ -19,6 +19,9 @@ markup:
     startLevel: 2
     endLevel: 3
     ordered: false
+  highlight:
+    noClasses: false
+    securityLevel: 'insecure'
 
 params:
     author: Liwenqi

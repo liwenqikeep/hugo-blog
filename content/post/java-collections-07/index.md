@@ -5,6 +5,7 @@ draft: false
 categories: ["Java"]
 tags: ["HashMap", "扩容", "resize", "迁移", "死循环"]
 series: ["Java集合系列"]
+toc: true
 ---
 
 ## 前言
