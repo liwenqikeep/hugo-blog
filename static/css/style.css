@@ -1198,7 +1198,7 @@ img {
     display: grid;
     grid-template-columns: 120px 1fr;
     gap: 24px;
-    padding: 24px 0;
+    padding: 16px 0;
     border-bottom: 1px solid var(--border-color);
     transition: all 0.3s ease;
 }
@@ -1210,7 +1210,7 @@ img {
 .posts-list .post-item:hover {
     background: var(--bg-secondary);
     margin: 0 -16px;
-    padding: 24px 16px;
+    padding: 16px 16px;
     border-radius: 8px;
 }
 
