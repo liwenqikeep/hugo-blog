@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>微服务 on Liwenqi&#39;s Blog</title>
+		<link>https://liwenqikeep.github.io/category/%E5%BE%AE%E6%9C%8D%E5%8A%A1/</link>
+		<description>Recent content in 微服务 on Liwenqi&#39;s Blog</description>
+		<generator>Hugo</generator>
+		<language>zh-cn</language>
+		
+		
+		
+			<copyright>Liwenqi</copyright>
+		
+		
+			<atom:link href="https://liwenqikeep.github.io/category/%E5%BE%AE%E6%9C%8D%E5%8A%A1/index.xml" rel="self" type="application/rss+xml" />
+	</channel>
+</rss>

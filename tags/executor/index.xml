@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Executor on Liwenqi&#39;s Blog</title>
+		<link>https://liwenqikeep.github.io/tags/executor/</link>
+		<description>Recent content in Executor on Liwenqi&#39;s Blog</description>
+		<generator>Hugo</generator>
+		<language>zh-cn</language>
+		
+		
+		
+			<copyright>Liwenqi</copyright>
+		
+		
+			<lastBuildDate>Wed, 20 Dec 2017 00:00:00 +0000</lastBuildDate>
+		
+			<atom:link href="https://liwenqikeep.github.io/tags/executor/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Java 多线程（五）：线程池深入</title>
+				<link>https://liwenqikeep.github.io/posts/java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%BA%94%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%B7%B1%E5%85%A5/</link>
+				<pubDate>Wed, 20 Dec 2017 00:00:00 +0000</pubDate>
+				<guid>https://liwenqikeep.github.io/posts/java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%BA%94%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%B7%B1%E5%85%A5/</guid>
+				<description>&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;&#xA;&lt;p&gt;线程的创建和销毁是有开销的。在高并发场景下，频繁创建销毁线程会严重影响性能。线程池正是为了解决这一问题而生，它是实际项目中最常用的并发组件。&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="开发工程师 | 技术分享">
+    <title>Java 集合类框架详解 - Liwenqi&#39;s Blog</title>
+    
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    
+</head>
+<body>
+    
+    <header class="header">
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="/img/avatar.png" alt="Liwenqi&#39;s Blog" class="nav-avatar">
+                <span class="nav-title">Liwenqi&#39;s Blog</span>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link ">首页</a></li>
+                <li><a href="/post/" class="nav-link active">文章</a></li>
+                <li><a href="/about/" class="nav-link">关于</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+    
+    
+    <main class="main">
+        <div class="container">
+            
+<article class="page">
+    <header class="page-header">
+        <h1 class="page-title">Java 集合类框架详解</h1>
+    </header>
+
+    <div class="page-content">
+        <h2 id="概述">概述</h2>
+<p>Java 集合类框架（Java Collections Framework）是 Java 标准库中用于存储和操作对象组的核心组件。它提供了丰富的数据结构，可以满足不同的业务场景需求。</p>
+<h2 id="集合框架层次结构">集合框架层次结构</h2>
+<pre tabindex="0"><code>Collection
+├── List（有序、可重复）
+│   ├── ArrayList
+│   ├── LinkedList
+│   └── Vector
+├── Set（无序、不可重复）
+│   ├── HashSet
+│   ├── LinkedHashSet
+│   └── TreeSet
+└── Queue（队列）
+    ├── LinkedList
+    └── PriorityQueue
+
+Map（键值对）
+├── HashMap
+├── LinkedHashMap
+├── TreeMap
+└── Hashtable
+</code></pre><h2 id="list-接口">List 接口</h2>
+<h3 id="arraylist">ArrayList</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> list <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>list.<span style="color:#a6e22e">add</span>(<span style="color:#e6db74">&#34;Java&#34;</span>);
+</span></span><span style="display:flex;"><span>list.<span style="color:#a6e22e">add</span>(<span style="color:#e6db74">&#34;Python&#34;</span>);
+</span></span><span style="display:flex;"><span>list.<span style="color:#a6e22e">add</span>(<span style="color:#e6db74">&#34;Go&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 访问元素</span>
+</span></span><span style="display:flex;"><span>String first <span style="color:#f92672">=</span> list.<span style="color:#a6e22e">get</span>(0);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 遍历</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (String item : list) {
+</span></span><span style="display:flex;"><span>    System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(item);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>特点</strong>：</p>
+<ul>
+<li>基于动态数组实现</li>
+<li>随机访问效率高 O(1)</li>
+<li>插入、删除效率低 O(n)</li>
+<li>线程不安全</li>
+</ul>
+<h3 id="linkedlist">LinkedList</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>LinkedList<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> linkedList <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LinkedList<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>linkedList.<span style="color:#a6e22e">add</span>(<span style="color:#e6db74">&#34;A&#34;</span>);
+</span></span><span style="display:flex;"><span>linkedList.<span style="color:#a6e22e">addFirst</span>(<span style="color:#e6db74">&#34;B&#34;</span>);
+</span></span><span style="display:flex;"><span>linkedList.<span style="color:#a6e22e">addLast</span>(<span style="color:#e6db74">&#34;C&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 在头部和尾部操作效率高</span>
+</span></span><span style="display:flex;"><span>linkedList.<span style="color:#a6e22e">removeFirst</span>();
+</span></span><span style="display:flex;"><span>linkedList.<span style="color:#a6e22e">removeLast</span>();
+</span></span></code></pre></div><p><strong>特点</strong>：</p>
+<ul>
+<li>基于双向链表实现</li>
+<li>插入、删除效率高 O(1)</li>
+<li>随机访问效率低 O(n)</li>
+<li>可用作栈和队列</li>
+</ul>
+<h2 id="set-接口">Set 接口</h2>
+<h3 id="hashset">HashSet</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Set<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> set <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashSet<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>set.<span style="color:#a6e22e">add</span>(<span style="color:#e6db74">&#34;Apple&#34;</span>);
+</span></span><span style="display:flex;"><span>set.<span style="color:#a6e22e">add</span>(<span style="color:#e6db74">&#34;Banana&#34;</span>);
+</span></span><span style="display:flex;"><span>set.<span style="color:#a6e22e">add</span>(<span style="color:#e6db74">&#34;Apple&#34;</span>);  <span style="color:#75715e">// 重复元素不会被添加</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 判断是否包含</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">boolean</span> hasApple <span style="color:#f92672">=</span> set.<span style="color:#a6e22e">contains</span>(<span style="color:#e6db74">&#34;Apple&#34;</span>);
+</span></span></code></pre></div><p><strong>特点</strong>：</p>
+<ul>
+<li>基于 HashMap 实现</li>
+<li>元素无序</li>
+<li>查找、添加效率高 O(1)</li>
+<li>线程不安全</li>
+</ul>
+<h3 id="treeset">TreeSet</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Set<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> treeSet <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TreeSet<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>treeSet.<span style="color:#a6e22e">add</span>(3);
+</span></span><span style="display:flex;"><span>treeSet.<span style="color:#a6e22e">add</span>(1);
+</span></span><span style="display:flex;"><span>treeSet.<span style="color:#a6e22e">add</span>(2);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 自然排序</span>
+</span></span><span style="display:flex;"><span>System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(treeSet.<span style="color:#a6e22e">first</span>());  <span style="color:#75715e">// 1</span>
+</span></span><span style="display:flex;"><span>System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(treeSet.<span style="color:#a6e22e">last</span>());   <span style="color:#75715e">// 3</span>
+</span></span></code></pre></div><p><strong>特点</strong>：</p>
+<ul>
+<li>基于红黑树实现</li>
+<li>元素有序（自然排序或自定义排序）</li>
+<li>查找、添加效率 O(log n)</li>
+</ul>
+<h2 id="map-接口">Map 接口</h2>
+<h3 id="hashmap">HashMap</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Map<span style="color:#f92672">&lt;</span>String, Integer<span style="color:#f92672">&gt;</span> map <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>map.<span style="color:#a6e22e">put</span>(<span style="color:#e6db74">&#34;Java&#34;</span>, 98);
+</span></span><span style="display:flex;"><span>map.<span style="color:#a6e22e">put</span>(<span style="color:#e6db74">&#34;Python&#34;</span>, 95);
+</span></span><span style="display:flex;"><span>map.<span style="color:#a6e22e">put</span>(<span style="color:#e6db74">&#34;Go&#34;</span>, 90);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 访问</span>
+</span></span><span style="display:flex;"><span>Integer score <span style="color:#f92672">=</span> map.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#34;Java&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 遍历</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (Map.<span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>String, Integer<span style="color:#f92672">&gt;</span> entry : map.<span style="color:#a6e22e">entrySet</span>()) {
+</span></span><span style="display:flex;"><span>    System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(entry.<span style="color:#a6e22e">getKey</span>() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;: &#34;</span> <span style="color:#f92672">+</span> entry.<span style="color:#a6e22e">getValue</span>());
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>特点</strong>：</p>
+<ul>
+<li>基于哈希表实现</li>
+<li>键值对存储</li>
+<li>键不能重复</li>
+<li>线程不安全</li>
+</ul>
+<h3 id="linkedhashmap">LinkedHashMap</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>Map<span style="color:#f92672">&lt;</span>String, Integer<span style="color:#f92672">&gt;</span> linkedMap <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LinkedHashMap<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>linkedMap.<span style="color:#a6e22e">put</span>(<span style="color:#e6db74">&#34;A&#34;</span>, 1);
+</span></span><span style="display:flex;"><span>linkedMap.<span style="color:#a6e22e">put</span>(<span style="color:#e6db74">&#34;B&#34;</span>, 2);
+</span></span><span style="display:flex;"><span>linkedMap.<span style="color:#a6e22e">put</span>(<span style="color:#e6db74">&#34;C&#34;</span>, 3);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 保持插入顺序</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (String key : linkedMap.<span style="color:#a6e22e">keySet</span>()) {
+</span></span><span style="display:flex;"><span>    System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(key);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>特点</strong>：</p>
+<ul>
+<li>继承自 HashMap</li>
+<li>保持插入顺序</li>
+</ul>
+<h2 id="选择合适的数据结构">选择合适的数据结构</h2>
+<table>
+	<thead>
+			<tr>
+					<th>场景</th>
+					<th>推荐选择</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>需要快速随机访问</td>
+					<td>ArrayList</td>
+			</tr>
+			<tr>
+					<td>需要频繁插入删除</td>
+					<td>LinkedList</td>
+			</tr>
+			<tr>
+					<td>需要去重</td>
+					<td>HashSet</td>
+			</tr>
+			<tr>
+					<td>需要排序</td>
+					<td>TreeSet</td>
+			</tr>
+			<tr>
+					<td>键值对存储</td>
+					<td>HashMap</td>
+			</tr>
+			<tr>
+					<td>需要保持顺序</td>
+					<td>LinkedHashMap / LinkedHashSet</td>
+			</tr>
+			<tr>
+					<td>高并发场景</td>
+					<td>ConcurrentHashMap</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="总结">总结</h2>
+<p>Java 集合框架提供了丰富的数据结构，选择合适的数据结构可以显著提升程序性能。理解各数据结构的底层实现和特点，是写出高效 Java 代码的基础。</p>
+
+    </div>
+</article>
+
+        </div>
+    </main>
+    
+    
+    <footer class="footer">
+    <div class="footer-container">
+        <div class="footer-social">
+            
+            <a href="https://github.com/liwenqikeep" target="_blank" class="social-link" title="GitHub">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+            </a>
+            
+            
+            <a href="mailto:liwenqikeep@foxmail.com" class="social-link" title="邮箱">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+            </a>
+            
+        </div>
+        
+        <div class="footer-info">
+            <p>&copy; 2026 Liwenqi. All rights reserved.</p>
+            <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a></p>
+        </div>
+    </div>
+</footer>
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="/js/main.js"></script>
+    <script src="/js/toc.js"></script>
+    
+    
+</body>
+</html>

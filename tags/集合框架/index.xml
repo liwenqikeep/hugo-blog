@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>集合框架 on Liwenqi&#39;s Blog</title>
+		<link>https://liwenqikeep.github.io/tags/%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/</link>
+		<description>Recent content in 集合框架 on Liwenqi&#39;s Blog</description>
+		<generator>Hugo</generator>
+		<language>zh-cn</language>
+		
+		
+		
+			<copyright>Liwenqi</copyright>
+		
+		
+			<lastBuildDate>Thu, 14 Dec 2017 00:00:00 +0000</lastBuildDate>
+		
+			<atom:link href="https://liwenqikeep.github.io/tags/%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>Java 集合类框架详解</title>
+				<link>https://liwenqikeep.github.io/posts/java-%E9%9B%86%E5%90%88%E7%B1%BB%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/</link>
+				<pubDate>Thu, 14 Dec 2017 00:00:00 +0000</pubDate>
+				<guid>https://liwenqikeep.github.io/posts/java-%E9%9B%86%E5%90%88%E7%B1%BB%E6%A1%86%E6%9E%B6%E8%AF%A6%E8%A7%A3/</guid>
+				<description>&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;&#xA;&lt;p&gt;Java 集合类框架（Java Collections Framework）是 Java 标准库中用于存储和操作对象组的核心组件。它提供了丰富的数据结构，可以满足不同的业务场景需求。&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>

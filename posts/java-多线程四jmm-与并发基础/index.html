@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="开发工程师 | 技术分享">
+    <title>Java 多线程（四）：JMM 与并发基础 - Liwenqi&#39;s Blog</title>
+    
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    
+</head>
+<body>
+    
+    <header class="header">
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="/img/avatar.png" alt="Liwenqi&#39;s Blog" class="nav-avatar">
+                <span class="nav-title">Liwenqi&#39;s Blog</span>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link ">首页</a></li>
+                <li><a href="/post/" class="nav-link active">文章</a></li>
+                <li><a href="/about/" class="nav-link">关于</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+    
+    
+    <main class="main">
+        <div class="container">
+            
+<article class="page">
+    <header class="page-header">
+        <h1 class="page-title">Java 多线程（四）：JMM 与并发基础</h1>
+    </header>
+
+    <div class="page-content">
+        <h2 id="前言">前言</h2>
+<p>理解 Java 内存模型（JMM）是深入掌握多线程编程的关键。只有了解底层原理，才能在遇到并发问题时准确判断原因并选择正确的解决方案。</p>
+<h2 id="一java-内存模型jmm">一、Java 内存模型（JMM）</h2>
+<h3 id="11-为什么需要-jmm">1.1 为什么需要 JMM</h3>
+<p>现代计算机的内存结构：</p>
+<pre tabindex="0"><code>CPU Cache (L1/L2/L3) ←→  主内存  ←→  磁盘
+</code></pre><p>多线程程序面临的问题：</p>
+<ul>
+<li><strong>可见性</strong>：一个线程修改了共享变量，其他线程可能看不到</li>
+<li><strong>有序性</strong>：编译器/CPU 可能对指令进行重排序</li>
+<li><strong>原子性</strong>：某些操作不是原子的</li>
+</ul>
+<h3 id="12-jmm-的抽象结构">1.2 JMM 的抽象结构</h3>
+<p>JMM 将内存划分为主内存和工作内存：</p>
+<pre tabindex="0"><code>线程 A                    线程 B
+   │                         │
+   ▼                         ▼
+┌─────────┐              ┌─────────┐
+│工作内存A│              │工作内存B│
+└────┬────┘              └────┬────┘
+     │    ↕ read/write      │
+     │    ↕  主内存          │
+     ▼                       ▼
+   ┌─────────────────────────────────┐
+   │            主内存                │
+   └─────────────────────────────────┘
+</code></pre><p><strong>线程的工作内存</strong>是 CPU 寄存器和缓存的抽象，线程对变量的操作都在工作内存中进行，然后同步回主内存。</p>
+<h3 id="13-jmm-的三大特性">1.3 JMM 的三大特性</h3>
+<table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>说明</th>
+					<th>解决问题</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>原子性</td>
+					<td>基本数据类型读写是原子的</td>
+					<td>基础操作的线程安全</td>
+			</tr>
+			<tr>
+					<td>可见性</td>
+					<td>线程对变量的修改对其他线程可见</td>
+					<td>缓存一致性问题</td>
+			</tr>
+			<tr>
+					<td>有序性</td>
+					<td>指令按程序顺序执行</td>
+					<td>重排序导致的乱序</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="二volatile-关键字">二、volatile 关键字</h2>
+<h3 id="21-volatile-的作用">2.1 volatile 的作用</h3>
+<p>volatile 是轻量级的同步机制，确保两点：</p>
+<ol>
+<li><strong>保证可见性</strong>：写操作立即刷新到主内存，读操作直接从主内存读取</li>
+<li><strong>禁止重排序</strong>：在 volatile 写操作前后的指令不能重排序</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">VolatileDemo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">boolean</span> flag <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 线程 A</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">writer</span>() {
+</span></span><span style="display:flex;"><span>        flag <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;  <span style="color:#75715e">// volatile 写</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 线程 B</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">reader</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (<span style="color:#f92672">!</span>flag) {  <span style="color:#75715e">// volatile 读</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 等待</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;flag is true&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="22-volatile-的内存语义">2.2 volatile 的内存语义</h3>
+<p><strong>volatile 写的内存语义</strong>：</p>
+<pre tabindex="0"><code>线程本地内存 → 刷新到主内存 → 其他线程本地内存失效
+</code></pre><p><strong>volatile 读的内存语义</strong>：</p>
+<pre tabindex="0"><code>从主内存读取 → 更新线程本地内存
+</code></pre><h3 id="23-volatile-的使用场景">2.3 volatile 的使用场景</h3>
+<p><strong>适合使用 volatile</strong>：</p>
+<ul>
+<li>状态标志（如 isRunning）</li>
+<li>双重检查锁定（Double-Checked Locking）</li>
+<li>一次性安全发布</li>
+</ul>
+<p><strong>不适合使用 volatile</strong>：</p>
+<ul>
+<li>需要原子操作的复合操作（如 <code>i++</code>）</li>
+<li>依赖当前值的操作</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// 适合 volatile 的场景</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">boolean</span> shutdown;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">shutdown</span>() {
+</span></span><span style="display:flex;"><span>    shutdown <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">doWork</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (<span style="color:#f92672">!</span>shutdown) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 处理任务</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 不适合 volatile 的场景</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">int</span> count <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">increment</span>() {
+</span></span><span style="display:flex;"><span>    count<span style="color:#f92672">++</span>;  <span style="color:#75715e">// ❌ 不是原子操作！需要 synchronized 或 AtomicInteger</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="24-实战单例模式的正确实现">2.4 实战：单例模式的正确实现</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Singleton</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">volatile</span> Singleton instance;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 双重检查锁定</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Singleton <span style="color:#a6e22e">getInstance</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (instance <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) {  <span style="color:#75715e">// 第一次检查</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">synchronized</span> (Singleton.<span style="color:#a6e22e">class</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (instance <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) {  <span style="color:#75715e">// 第二次检查</span>
+</span></span><span style="display:flex;"><span>                    instance <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Singleton();
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> instance;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>为什么需要 volatile？</strong></p>
+<p><code>instance = new Singleton()</code> 实际上有三个步骤：</p>
+<ol>
+<li>分配内存</li>
+<li>调用构造函数</li>
+<li>将引用赋值给 instance</li>
+</ol>
+<p>如果没有 volatile，步骤 2 和 3 可能重排序，导致其他线程获取到未完全初始化的对象。</p>
+<h2 id="三cas-与原子操作">三、CAS 与原子操作</h2>
+<h3 id="31-cas-原理">3.1 CAS 原理</h3>
+<p>CAS（Compare-And-Swap）是一种乐观锁机制：</p>
+<pre tabindex="0"><code>CAS(var, expected, newValue):
+    if var == expected:
+        var = newValue
+        return true
+    else:
+        return false
+</code></pre><p>在硬件层面，CAS 由 CPU 提供原子指令支持。</p>
+<h3 id="32-cas-的问题">3.2 CAS 的问题</h3>
+<p><strong>ABA 问题</strong>：</p>
+<pre tabindex="0"><code>线程 A: 读取 A → 线程 B: 改为 B → 线程 B: 改回 A
+线程 A: CAS 成功，但 A 已经不是原来的 A 了
+</code></pre><p><strong>解决方案</strong>：使用版本号（AtomicStampedReference）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ABAProblem</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        AtomicStampedReference<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> ref <span style="color:#f92672">=</span> 
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">new</span> AtomicStampedReference<span style="color:#f92672">&lt;&gt;</span>(1, 0);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> stamp <span style="color:#f92672">=</span> ref.<span style="color:#a6e22e">getStamp</span>();
+</span></span><span style="display:flex;"><span>        ref.<span style="color:#a6e22e">compareAndSet</span>(1, 2, stamp, stamp <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>        ref.<span style="color:#a6e22e">compareAndSet</span>(2, 1, ref.<span style="color:#a6e22e">getStamp</span>(), stamp <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 即使值相同，版本号不同，CAS 失败</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">boolean</span> result <span style="color:#f92672">=</span> ref.<span style="color:#a6e22e">compareAndSet</span>(1, 3, stamp, stamp <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;CAS 结果: &#34;</span> <span style="color:#f92672">+</span> result);  <span style="color:#75715e">// false</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>自旋开销</strong>：在高竞争场景下，CAS 失败会导致自旋，影响性能。</p>
+<h3 id="33-atomic-包常用类">3.3 atomic 包常用类</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AtomicDemo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 原子整数</span>
+</span></span><span style="display:flex;"><span>        AtomicInteger atomicInt <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicInteger(0);
+</span></span><span style="display:flex;"><span>        atomicInt.<span style="color:#a6e22e">incrementAndGet</span>();  <span style="color:#75715e">// ++i</span>
+</span></span><span style="display:flex;"><span>        atomicInt.<span style="color:#a6e22e">getAndIncrement</span>();  <span style="color:#75715e">// i++</span>
+</span></span><span style="display:flex;"><span>        atomicInt.<span style="color:#a6e22e">addAndGet</span>(5);       <span style="color:#75715e">// i += 5</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 原子长整数</span>
+</span></span><span style="display:flex;"><span>        AtomicLong atomicLong <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicLong(0);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 原子布尔</span>
+</span></span><span style="display:flex;"><span>        AtomicBoolean atomicBoolean <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicBoolean(<span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>        atomicBoolean.<span style="color:#a6e22e">compareAndSet</span>(<span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 原子引用</span>
+</span></span><span style="display:flex;"><span>        AtomicReference<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> userRef <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicReference<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>        userRef.<span style="color:#a6e22e">compareAndSet</span>(<span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">new</span> User(<span style="color:#e6db74">&#34;Alice&#34;</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="34-实战高性能计数器">3.4 实战：高性能计数器</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PerformanceCounter</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用 LongAdder 替代 AtomicLong，高并发下性能更好</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> LongAdder successCount <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LongAdder();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> LongAdder failureCount <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LongAdder();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> LongAccumulator maxLatency <span style="color:#f92672">=</span> 
+</span></span><span style="display:flex;"><span>        LongAccumulator.<span style="color:#a6e22e">max</span>((x, y) <span style="color:#f92672">-&gt;</span> x <span style="color:#f92672">&gt;</span> y <span style="color:#f92672">?</span> x : y, 0);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> AtomicLong totalLatency <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicLong(0);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">recordSuccess</span>(<span style="color:#66d9ef">long</span> latencyMs) {
+</span></span><span style="display:flex;"><span>        successCount.<span style="color:#a6e22e">increment</span>();
+</span></span><span style="display:flex;"><span>        totalLatency.<span style="color:#a6e22e">addAndGet</span>(latencyMs);
+</span></span><span style="display:flex;"><span>        maxLatency.<span style="color:#a6e22e">accumulate</span>(latencyMs);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">recordFailure</span>() {
+</span></span><span style="display:flex;"><span>        failureCount.<span style="color:#a6e22e">increment</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">printStats</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> success <span style="color:#f92672">=</span> successCount.<span style="color:#a6e22e">sum</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> failure <span style="color:#f92672">=</span> failureCount.<span style="color:#a6e22e">sum</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> total <span style="color:#f92672">=</span> success <span style="color:#f92672">+</span> failure;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;总请求: &#34;</span> <span style="color:#f92672">+</span> total);
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;成功: &#34;</span> <span style="color:#f92672">+</span> success <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;, 失败: &#34;</span> <span style="color:#f92672">+</span> failure);
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;成功率: &#34;</span> <span style="color:#f92672">+</span> (total <span style="color:#f92672">&gt;</span> 0 <span style="color:#f92672">?</span> success <span style="color:#f92672">*</span> 100.<span style="color:#a6e22e">0</span> <span style="color:#f92672">/</span> total : 0) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;%&#34;</span>);
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;最大延迟: &#34;</span> <span style="color:#f92672">+</span> maxLatency.<span style="color:#a6e22e">get</span>() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;ms&#34;</span>);
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;平均延迟: &#34;</span> <span style="color:#f92672">+</span> (success <span style="color:#f92672">&gt;</span> 0 <span style="color:#f92672">?</span> totalLatency.<span style="color:#a6e22e">get</span>() <span style="color:#f92672">/</span> success : 0) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;ms&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>LongAdder vs AtomicLong</strong>：</p>
+<ul>
+<li>AtomicLong：CAS 实现，高竞争时有大量自旋</li>
+<li>LongAdder：分段 CAS，最后求和，降低竞争</li>
+</ul>
+<h2 id="四线程安全的并发集合">四、线程安全的并发集合</h2>
+<h3 id="41-集合分类">4.1 集合分类</h3>
+<table>
+	<thead>
+			<tr>
+					<th>分类</th>
+					<th>并发安全</th>
+					<th>有序</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>ConcurrentHashMap</td>
+					<td>✅</td>
+					<td>无序</td>
+					<td>高并发读写的 Key-Value 缓存</td>
+			</tr>
+			<tr>
+					<td>ConcurrentLinkedQueue</td>
+					<td>✅</td>
+					<td>FIFO</td>
+					<td>高性能队列</td>
+			</tr>
+			<tr>
+					<td>ConcurrentLinkedDeque</td>
+					<td>✅</td>
+					<td>FILO</td>
+					<td>高性能双端队列</td>
+			</tr>
+			<tr>
+					<td>CopyOnWriteArrayList</td>
+					<td>✅</td>
+					<td>有序</td>
+					<td>读多写少的列表</td>
+			</tr>
+			<tr>
+					<td>CopyOnWriteArraySet</td>
+					<td>✅</td>
+					<td>无序</td>
+					<td>读多写少的集合</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="42-concurrenthashmap-详解">4.2 ConcurrentHashMap 详解</h3>
+<p><strong>分段锁 vs JDK 8 的 CAS + synchronized</strong></p>
+<p>JDK 7 使用分段锁，JDK 8 改用 CAS + synchronized：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// JDK 8 的 ConcurrentHashMap 关键机制</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 1. Node 使用 volatile 保证可见性</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 使用 CAS 进行初始化</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. 链表过长时用 synchronized 转换为红黑树</span>
+</span></span></code></pre></div><p><strong>实战：缓存服务的实现</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CacheService</span><span style="color:#f92672">&lt;</span>K, V<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ConcurrentHashMap<span style="color:#f92672">&lt;</span>K, V<span style="color:#f92672">&gt;</span> cache <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ConcurrentHashMap<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ConcurrentHashMap<span style="color:#f92672">&lt;</span>K, Long<span style="color:#f92672">&gt;</span> expireMap <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ConcurrentHashMap<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 放入缓存</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">put</span>(K key, V value, <span style="color:#66d9ef">long</span> expireSeconds) {
+</span></span><span style="display:flex;"><span>        cache.<span style="color:#a6e22e">put</span>(key, value);
+</span></span><span style="display:flex;"><span>        expireMap.<span style="color:#a6e22e">put</span>(key, System.<span style="color:#a6e22e">currentTimeMillis</span>() <span style="color:#f92672">+</span> expireSeconds <span style="color:#f92672">*</span> 1000);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 获取缓存</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> V <span style="color:#a6e22e">get</span>(K key) {
+</span></span><span style="display:flex;"><span>        Long expireTime <span style="color:#f92672">=</span> expireMap.<span style="color:#a6e22e">get</span>(key);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (expireTime <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (System.<span style="color:#a6e22e">currentTimeMillis</span>() <span style="color:#f92672">&gt;</span> expireTime) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 已过期，异步清理</span>
+</span></span><span style="display:flex;"><span>            expireMap.<span style="color:#a6e22e">remove</span>(key);
+</span></span><span style="display:flex;"><span>            cache.<span style="color:#a6e22e">remove</span>(key);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> cache.<span style="color:#a6e22e">get</span>(key);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// computeIfAbsent 的妙用</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> V <span style="color:#a6e22e">getOrCompute</span>(K key, Function<span style="color:#f92672">&lt;</span>K, V<span style="color:#f92672">&gt;</span> computer) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 原子操作：避免缓存击穿</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> cache.<span style="color:#a6e22e">computeIfAbsent</span>(key, k <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            V value <span style="color:#f92672">=</span> computer.<span style="color:#a6e22e">apply</span>(k);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> value;
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="43-copyonwritearraylist">4.3 CopyOnWriteArrayList</h3>
+<p><strong>原理</strong>：写操作时复制整个数组，读取不需要加锁。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CopyOnWriteDemo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> CopyOnWriteArrayList<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> list <span style="color:#f92672">=</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">new</span> CopyOnWriteArrayList<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 读操作 - 无锁</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">read</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (String item : list) {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(item);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 写操作 - 加锁复制</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span>(String item) {
+</span></span><span style="display:flex;"><span>        list.<span style="color:#a6e22e">add</span>(item);  <span style="color:#75715e">// 内部已加锁</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>适用场景</strong>：</p>
+<ul>
+<li>配置信息读取</li>
+<li>黑白名单</li>
+<li>监听器列表</li>
+</ul>
+<p><strong>注意</strong>：不适合写操作频繁的场景，会导致频繁复制。</p>
+<h3 id="44-实战批量数据处理">4.4 实战：批量数据处理</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BatchDataProcessor</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ConcurrentLinkedQueue<span style="color:#f92672">&lt;</span>Record<span style="color:#f92672">&gt;</span> queue <span style="color:#f92672">=</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">new</span> ConcurrentLinkedQueue<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> batchSize;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> threadCount;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ExecutorService executor;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">BatchDataProcessor</span>(<span style="color:#66d9ef">int</span> batchSize, <span style="color:#66d9ef">int</span> threadCount) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">batchSize</span> <span style="color:#f92672">=</span> batchSize;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">threadCount</span> <span style="color:#f92672">=</span> threadCount;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">executor</span> <span style="color:#f92672">=</span> Executors.<span style="color:#a6e22e">newFixedThreadPool</span>(threadCount);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">submit</span>(Record record) {
+</span></span><span style="display:flex;"><span>        queue.<span style="color:#a6e22e">offer</span>(record);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">startProcessing</span>(Consumer<span style="color:#f92672">&lt;</span>List<span style="color:#f92672">&lt;</span>Record<span style="color:#f92672">&gt;&gt;</span> batchHandler) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> threadCount; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            executor.<span style="color:#a6e22e">submit</span>(() <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>                List<span style="color:#f92672">&lt;</span>Record<span style="color:#f92672">&gt;</span> batch <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;</span>(batchSize);
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>                    batch.<span style="color:#a6e22e">clear</span>();
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 批量取出</span>
+</span></span><span style="display:flex;"><span>                    Record record;
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">while</span> (batch.<span style="color:#a6e22e">size</span>() <span style="color:#f92672">&lt;</span> batchSize <span style="color:#f92672">&amp;&amp;</span> (record <span style="color:#f92672">=</span> queue.<span style="color:#a6e22e">poll</span>()) <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>                        batch.<span style="color:#a6e22e">add</span>(record);
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (batch.<span style="color:#a6e22e">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>                            Thread.<span style="color:#a6e22e">sleep</span>(100);
+</span></span><span style="display:flex;"><span>                        } <span style="color:#66d9ef">catch</span> (InterruptedException e) {
+</span></span><span style="display:flex;"><span>                            Thread.<span style="color:#a6e22e">currentThread</span>().<span style="color:#a6e22e">interrupt</span>();
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 处理批次</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>                        batchHandler.<span style="color:#a6e22e">accept</span>(<span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;</span>(batch));
+</span></span><span style="display:flex;"><span>                    } <span style="color:#66d9ef">catch</span> (Exception e) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">// 处理失败，记录日志</span>
+</span></span><span style="display:flex;"><span>                        handleFailure(batch);
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            });
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleFailure</span>(List<span style="color:#f92672">&lt;</span>Record<span style="color:#f92672">&gt;</span> batch) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 记录或重试</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">shutdown</span>() {
+</span></span><span style="display:flex;"><span>        executor.<span style="color:#a6e22e">shutdown</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="五happens-before-规则">五、happens-before 规则</h2>
+<p>理解 happens-before 是理解 JMM 的核心。</p>
+<h3 id="51-什么是-happens-before">5.1 什么是 happens-before</h3>
+<p>如果操作 A happens-before 操作 B，那么：</p>
+<ul>
+<li>A 的结果对 B 可见</li>
+<li>A 的执行顺序在 B 之前</li>
+</ul>
+<h3 id="52-jdk-定义的-happens-before-规则">5.2 JDK 定义的 happens-before 规则</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// 1. 程序顺序规则</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 同一线程中，书写在前的操作 happens-before 书写在后的操作</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> 1;      <span style="color:#75715e">// A</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> b <span style="color:#f92672">=</span> 2;      <span style="color:#75715e">// B</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A → B</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 监视器锁规则</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">synchronized</span> (lock) {
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">=</span> 10;     <span style="color:#75715e">// A：获取锁前的操作</span>
+</span></span><span style="display:flex;"><span>}               <span style="color:#75715e">// B：释放锁</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A → B</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. volatile 规则</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">boolean</span> flag <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;  <span style="color:#75715e">// A</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A happens-before B</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> (flag) { }               <span style="color:#75715e">// B</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 4. 线程启动规则</span>
+</span></span><span style="display:flex;"><span>Thread.<span style="color:#a6e22e">start</span>()  <span style="color:#75715e">// A</span>
+</span></span><span style="display:flex;"><span>thread.<span style="color:#a6e22e">run</span>();   <span style="color:#75715e">// B</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A → B</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 5. 线程终止规则</span>
+</span></span><span style="display:flex;"><span>thread.<span style="color:#a6e22e">join</span>();  <span style="color:#75715e">// A</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// B happens-before A</span>
+</span></span></code></pre></div><h2 id="总结">总结</h2>
+<p>本文深入讲解了 Java 内存模型与并发基础：</p>
+<ol>
+<li><strong>JMM</strong>：主内存与工作内存的抽象，确保可见性、有序性、原子性</li>
+<li><strong>volatile</strong>：轻量级同步，保证可见性和禁止重排序</li>
+<li><strong>CAS</strong>：乐观锁机制，atomic 包的基础</li>
+<li><strong>并发集合</strong>：ConcurrentHashMap、CopyOnWriteArrayList 等</li>
+</ol>
+<p><strong>实际项目建议</strong>：</p>
+<ul>
+<li>volatile 适用于状态标志和一次性发布</li>
+<li>CAS 适用于计数器等低竞争场景，高竞争用 LongAdder</li>
+<li>优先使用并发集合而非自行加锁包装</li>
+<li>理解 happens-before 规则有助于排查并发问题</li>
+</ul>
+<h2 id="下篇预告">下篇预告</h2>
+<p>下一篇文章我们将深入讲解线程池的原理与配置，包括 ThreadPoolExecutor 核心参数、队列选择、拒绝策略，以及实际项目中的线程池调优经验。</p>
+<hr>
+<p><strong>相关阅读</strong>：</p>
+<ul>
+<li><a href="/posts/java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%80%E7%BA%BF%E7%A8%8B%E5%88%9B%E5%BB%BA%E4%B8%8E%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/">Java 多线程（一）：线程创建与生命周期</a></li>
+<li><a href="/posts/java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%BA%8C%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6/">Java 多线程（二）：线程同步机制</a></li>
+<li><a href="/posts/java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%89%E7%BA%BF%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E4%B8%8E%E5%8D%8F%E4%BD%9C/">Java 多线程（三）：线程间通信与协作</a></li>
+</ul>
+
+    </div>
+</article>
+
+        </div>
+    </main>
+    
+    
+    <footer class="footer">
+    <div class="footer-container">
+        <div class="footer-social">
+            
+            <a href="https://github.com/liwenqikeep" target="_blank" class="social-link" title="GitHub">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+            </a>
+            
+            
+            <a href="mailto:liwenqikeep@foxmail.com" class="social-link" title="邮箱">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+            </a>
+            
+        </div>
+        
+        <div class="footer-info">
+            <p>&copy; 2026 Liwenqi. All rights reserved.</p>
+            <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a></p>
+        </div>
+    </div>
+</footer>
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="/js/main.js"></script>
+    <script src="/js/toc.js"></script>
+    
+    
+</body>
+</html>
