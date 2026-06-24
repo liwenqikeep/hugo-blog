@@ -78,7 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const href = this.getAttribute('href');
             if (href !== '#') {
                 e.preventDefault();
-                const target = document.querySelector(href);
+                // 使用 decodeURIComponent 处理包含中文的 href
+                const targetId = decodeURIComponent(href.substring(1));
+                const target = document.getElementById(targetId);
                 if (target) {
                     target.scrollIntoView({ behavior: 'smooth' });
                 }

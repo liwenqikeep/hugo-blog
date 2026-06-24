@@ -19,7 +19,7 @@
 <section class="posts">
     <h2 class="section-title">最新文章</h2>
     <div class="posts-list">
-        {{ range first 5 (where .Site.RegularPages "Type" "post") }}
+        {{ range first 5 ((where .Site.RegularPages "Type" "post").ByDate.Reverse) }}
         <article class="post-card">
             <div class="post-meta">
                 <time class="post-date">{{ .Date.Format "2006-01-02" }}</time>

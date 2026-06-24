@@ -30,7 +30,7 @@
 
         <!-- 文章列表 -->
         <div id="posts-list" class="posts-list">
-            {{ range where site.RegularPages "Type" "in" site.Params.mainSections }}
+            {{ range (where site.RegularPages "Type" "in" site.Params.mainSections).ByDate.Reverse }}
             <article class="post-item" 
                      data-title="{{ .Title | lower }}"
                      data-date="{{ .Date.Format "2006-01-02" }}"
