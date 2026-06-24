@@ -1099,6 +1099,22 @@ img {
 .filter-label {
     font-size: 0.9rem;
     color: var(--text-secondary);
+    flex: 1;
+}
+
+.filter-count {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background: var(--bg-color);
+    padding: 2px 8px;
+    border-radius: 10px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.filter-item:has(input:checked) .filter-count {
+    background: var(--primary-color);
+    color: white;
 }
 
 .filter-item:has(input:checked) {

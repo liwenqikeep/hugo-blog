@@ -1,28 +1,55 @@
-{{- /* 获取所有分类 */ -}}
+{{- /* 获取所有文章 */ -}}
+{{- $pages := where site.RegularPages "Type" "in" site.Params.mainSections -}}
+
+{{- /* 统计分类及数量 */ -}}
+{{- $categoryMap := dict -}}
+{{- range $pages -}}
+{{-   range .Params.categories -}}
+{{-     $cat := . -}}
+{{-     $categoryMap = merge $categoryMap (dict $cat (add (index $categoryMap $cat | default 0) 1)) -}}
+{{-   end -}}
+{{- end -}}
+
+{{- /* 获取所有分类并排序 */ -}}
 {{- $categories := slice -}}
-{{- range where site.RegularPages "Type" "in" site.Params.mainSections -}}
-{{- $categories = $categories | append .Params.categories -}}
+{{- range $name, $count := $categoryMap -}}
+{{-   $categories = $categories | append $name -}}
 {{- end -}}
-{{- $categories = $categories | uniq | sort -}}
+{{- $categories = $categories | sort -}}
 
-{{- /* 获取所有年份 */ -}}
+{{- /* 统计年份及数量 */ -}}
+{{- $yearMap := dict -}}
+{{- range $pages -}}
+{{-   $year := .Date.Format "2006" -}}
+{{-   $yearMap = merge $yearMap (dict $year (add (index $yearMap $year | default 0) 1)) -}}
+{{- end -}}
+
+{{- /* 获取所有年份并降序排序 */ -}}
 {{- $years := slice -}}
-{{- range where site.RegularPages "Type" "in" site.Params.mainSections -}}
-{{- $years = $years | append (.Date.Format "2006") -}}
+{{- range $name, $count := $yearMap -}}
+{{-   $years = $years | append $name -}}
 {{- end -}}
-{{- $years = $years | uniq | sort -}}
-{{- $revYears := slice -}}
+{{- $years = $years | sort -}}
+{{- $sortedYears := slice -}}
 {{- range seq (sub (len $years) 1) 0 -}}
-{{- $revYears = $revYears | append (index $years .) -}}
+{{-   $sortedYears = $sortedYears | append (index $years .) -}}
 {{- end -}}
-{{- $years = $revYears -}}
 
-{{- /* 获取所有标签 */ -}}
-{{- $tags := slice -}}
-{{- range where site.RegularPages "Type" "in" site.Params.mainSections -}}
-{{- $tags = $tags | append .Params.tags -}}
+{{- /* 统计标签及数量 */ -}}
+{{- $tagMap := dict -}}
+{{- range $pages -}}
+{{-   range .Params.tags -}}
+{{-     $tag := . -}}
+{{-     $tagMap = merge $tagMap (dict $tag (add (index $tagMap $tag | default 0) 1)) -}}
+{{-   end -}}
 {{- end -}}
-{{- $tags = $tags | uniq | sort -}}
+
+{{- /* 获取所有标签并排序 */ -}}
+{{- $tags := slice -}}
+{{- range $name, $count := $tagMap -}}
+{{-   $tags = $tags | append $name -}}
+{{- end -}}
+{{- $tags = $tags | sort -}}
 
 <aside class="post-filters">
     <!-- 移动端关闭按钮 -->
@@ -48,12 +75,11 @@
         </button>
         <div class="filter-content">
             {{- range $categories -}}
-            {{- if . -}}
             <label class="filter-item">
                 <input type="checkbox" name="category" value="{{ . }}">
                 <span class="filter-label">{{ . }}</span>
+                <span class="filter-count">{{ index $categoryMap . }}</span>
             </label>
-            {{- end -}}
             {{- end -}}
         </div>
     </div>
@@ -67,10 +93,11 @@
             </svg>
         </button>
         <div class="filter-content">
-            {{- range $years -}}
+            {{- range $sortedYears -}}
             <label class="filter-item">
                 <input type="checkbox" name="year" value="{{ . }}">
                 <span class="filter-label">{{ . }}</span>
+                <span class="filter-count">{{ index $yearMap . }}</span>
             </label>
             {{- end -}}
         </div>
@@ -86,12 +113,11 @@
         </button>
         <div class="filter-content">
             {{- range $tags -}}
-            {{- if . -}}
             <label class="filter-item">
                 <input type="checkbox" name="tag" value="{{ . }}">
                 <span class="filter-label">{{ . }}</span>
+                <span class="filter-count">{{ index $tagMap . }}</span>
             </label>
-            {{- end -}}
             {{- end -}}
         </div>
     </div>

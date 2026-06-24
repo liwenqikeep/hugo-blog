@@ -329,4 +329,4 @@ if (channel.socket().isClosed()) {
 - 注意空轮询和并发问题
 
 > 📚 **推荐阅读**
-> - [NIO 实战：手写 HTTP 服务器]({{< relref "post/java-io-08" >}})
+> - [NIO 实战：手写 HTTP 服务器]({{< relref "post/java-io-09" >}})
