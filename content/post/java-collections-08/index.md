@@ -5,9 +5,7 @@ draft: false
 categories: ["Java"]
 tags: ["HashMap", "红黑树", "TreeNode", "树化", "退化"]
 series: ["Java集合系列"]
-[params.toc]
-  startLevel = 2
-  endLevel = 3
+toc: true
 ---
 
 ## 前言

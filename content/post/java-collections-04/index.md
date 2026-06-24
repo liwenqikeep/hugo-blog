@@ -5,9 +5,7 @@ draft: false
 categories: ["Java"]
 tags: ["fail-fast", "modCount", "ConcurrentModificationException", "迭代器"]
 series: ["Java集合系列"]
-[params.toc]
-  startLevel = 2
-  endLevel = 3
+toc: true
 ---
 
 ## 前言

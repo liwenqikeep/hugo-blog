@@ -2,19 +2,17 @@
   Table of Contents partial
   Usage: {{ partial "toc.html" . }}
   
-  Hugo 0.139.4+ 使用 .Fragments.ToHTML 方法
+  修复：使用更可靠的方式判断是否显示目录
 */}}
 
-{{- if (.Param "toc") -}}
-{{- $startLevel := or (.Param "toc.startLevel") 2 -}}
-{{- $endLevel := or (.Param "toc.endLevel") 3 -}}
-{{- $ordered := or (.Param "toc.ordered") false -}}
+{{- $showToc := true -}}
+{{- if ne (.Param "toc") false -}}
 <aside class="article-toc" id="article-toc">
     <div class="toc-header">
         <span class="toc-title">目录</span>
     </div>
     <nav id="TableOfContents" class="toc-nav">
-        {{ .Fragments.ToHTML $startLevel $endLevel $ordered }}
+        {{ .TableOfContents }}
     </nav>
     <div class="toc-footer">
         <a href="#" class="back-to-top" id="back-to-top">
