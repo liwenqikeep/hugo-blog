@@ -465,22 +465,45 @@ img {
 }
 
 /* 12. 表格 */
-.post-content table {
+.post-content table,
+.page-content table {
     width: 100%;
     border-collapse: collapse;
     margin: 1.5em 0;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .post-content th,
-.post-content td {
+.post-content td,
+.page-content th,
+.page-content td {
     border: 1px solid var(--border-color);
-    padding: 12px;
+    padding: 12px 16px;
     text-align: left;
 }
 
-.post-content th {
+.post-content th,
+.page-content th {
     background: var(--bg-secondary);
     font-weight: 600;
+}
+
+.post-content tr:hover,
+.page-content tr:hover {
+    background: var(--bg-secondary);
+}
+
+/* 斑马纹 */
+.post-content tbody tr:nth-child(even),
+.page-content tbody tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .post-content tbody tr:nth-child(even),
+[data-theme="dark"] .page-content tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
 }
 
 /* 13. 文章页脚 */
@@ -1094,7 +1117,14 @@ img {
 
 /* 搜索框 */
 .posts-search {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
+}
+
+/* 文章总数 */
+.posts-count {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
 .search-box {

@@ -23,9 +23,14 @@
             </div>
         </div>
 
+        <!-- 文章总数 -->
+        <div class="posts-count">
+            共 <span id="total-count">0</span> 篇文章
+        </div>
+
         <!-- 文章列表 -->
         <div id="posts-list" class="posts-list">
-            {{ range .Paginator.Pages }}
+            {{ range where site.RegularPages "Type" "in" site.Params.mainSections }}
             <article class="post-item" 
                      data-title="{{ .Title | lower }}"
                      data-date="{{ .Date.Format "2006-01-02" }}"

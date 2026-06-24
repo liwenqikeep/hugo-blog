@@ -20,7 +20,7 @@ markup:
       unsafe: true
   tableOfContents:
     startLevel: 2
-    endLevel: 3
+    endLevel: 4
     ordered: false
   highlight:
     noClasses: false

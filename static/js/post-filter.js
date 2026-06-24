@@ -37,6 +37,7 @@
             searchInput: document.getElementById('search-input'),
             pagination: document.getElementById('pagination'),
             noResults: document.getElementById('no-results'),
+            totalCount: document.getElementById('total-count'),
             filters: document.querySelector('.post-filters'),
             filtersToggle: document.querySelector('.filters-toggle'),
             filtersClose: document.querySelector('.filters-close'),
@@ -154,6 +155,11 @@
         // 更新无结果提示
         if (elements.noResults) {
             elements.noResults.style.display = visibleItems.length === 0 ? 'block' : 'none';
+        }
+
+        // 更新总数统计
+        if (elements.totalCount) {
+            elements.totalCount.textContent = visibleItems.length;
         }
 
         // 更新分页
