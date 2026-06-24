@@ -1,0 +1,98 @@
+{{- /* 获取所有分类 */ -}}
+{{- $categories := slice -}}
+{{- range where site.RegularPages "Type" "in" site.Params.mainSections -}}
+{{- $categories = $categories | append .Params.categories -}}
+{{- end -}}
+{{- $categories = $categories | uniq | sort -}}
+
+{{- /* 获取所有年份 */ -}}
+{{- $years := slice -}}
+{{- range where site.RegularPages "Type" "in" site.Params.mainSections -}}
+{{- $years = $years | append (.Date.Format "2006") -}}
+{{- end -}}
+{{- $years = $years | uniq | sort -}}
+{{- $revYears := slice -}}
+{{- range seq (sub (len $years) 1) 0 -}}
+{{- $revYears = $revYears | append (index $years .) -}}
+{{- end -}}
+{{- $years = $revYears -}}
+
+{{- /* 获取所有标签 */ -}}
+{{- $tags := slice -}}
+{{- range where site.RegularPages "Type" "in" site.Params.mainSections -}}
+{{- $tags = $tags | append .Params.tags -}}
+{{- end -}}
+{{- $tags = $tags | uniq | sort -}}
+
+<aside class="post-filters">
+    <!-- 移动端关闭按钮 -->
+    <button class="filters-close" aria-label="关闭筛选">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+    </button>
+
+    <div class="filters-header">
+        <h3 class="filters-title">筛选</h3>
+        <button class="filters-reset" type="button">重置</button>
+    </div>
+
+    <!-- 分类筛选 -->
+    <div class="filter-group" data-filter="category">
+        <button class="filter-header" aria-expanded="true">
+            <span class="filter-name">分类</span>
+            <svg class="filter-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+        <div class="filter-content">
+            {{- range $categories -}}
+            {{- if . -}}
+            <label class="filter-item">
+                <input type="checkbox" name="category" value="{{ . }}">
+                <span class="filter-label">{{ . }}</span>
+            </label>
+            {{- end -}}
+            {{- end -}}
+        </div>
+    </div>
+
+    <!-- 年份筛选 -->
+    <div class="filter-group" data-filter="year">
+        <button class="filter-header" aria-expanded="true">
+            <span class="filter-name">年份</span>
+            <svg class="filter-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+        <div class="filter-content">
+            {{- range $years -}}
+            <label class="filter-item">
+                <input type="checkbox" name="year" value="{{ . }}">
+                <span class="filter-label">{{ . }}</span>
+            </label>
+            {{- end -}}
+        </div>
+    </div>
+
+    <!-- 标签筛选 -->
+    <div class="filter-group" data-filter="tag">
+        <button class="filter-header" aria-expanded="true">
+            <span class="filter-name">标签</span>
+            <svg class="filter-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+        <div class="filter-content">
+            {{- range $tags -}}
+            {{- if . -}}
+            <label class="filter-item">
+                <input type="checkbox" name="tag" value="{{ . }}">
+                <span class="filter-label">{{ . }}</span>
+            </label>
+            {{- end -}}
+            {{- end -}}
+        </div>
+    </div>
+</aside>
