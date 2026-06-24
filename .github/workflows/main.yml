@@ -28,7 +28,7 @@ jobs:
           uses: peaceiris/actions-gh-pages@v4
           with:
               PERSONAL_TOKEN: ${{ secrets.HOGO }}
-              EXTERNAL_REPOSITORY: zhuanzhu-li/zhuanzhu-li.github.io
+              EXTERNAL_REPOSITORY: liwenqikeep/liwenqikeep.github.io
               PUBLISH_BRANCH: main
               PUBLISH_DIR: ./public
               commit_message: auto deploy

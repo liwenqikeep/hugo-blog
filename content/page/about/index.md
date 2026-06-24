@@ -33,7 +33,7 @@ menu:
 
 | 平台 | 链接 |
 |------|------|
-| 💻 GitHub | <https://github.com/zhuanzhu-li> |
+| 💻 GitHub | <https://github.com/liwenqikeep> |
 | 📧 Email | <liwenqikeep@foxmail.com> |
 
 > 📖 记录学习心得，分享技术经验，欢迎交流探讨！

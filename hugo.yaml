@@ -1,4 +1,4 @@
-baseurl: https://zhuanzhu-li.github.io/
+baseurl: https://liwenqikeep.github.io/
 languageCode: zh-cn
 title: Liwenqi's Blog
 copyright: Liwenqi
@@ -27,7 +27,7 @@ params:
     toc: true
     
     social:
-        github: https://github.com/zhuanzhu-li
+        github: https://github.com/liwenqikeep
         email: liwenqikeep@foxmail.com
         
     footer:

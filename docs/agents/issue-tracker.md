@@ -2,7 +2,7 @@
 
 **Tracker type:** GitHub Issues
 
-**Repository:** [zhuanzhu-li/hugo-blog](https://github.com/zhuanzhu-li/hugo-blog)
+**Repository:** [liwenqikeep/hugo-blog](https://github.com/liwenqikeep/hugo-blog)
 
 **CLI:** `gh` (GitHub CLI)
 
