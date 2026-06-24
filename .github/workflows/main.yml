@@ -31,4 +31,5 @@ jobs:
               EXTERNAL_REPOSITORY: liwenqikeep/hugo-blog
               PUBLISH_BRANCH: main
               PUBLISH_DIR: ./public
+              destination_dir: public
               commit_message: auto deploy
