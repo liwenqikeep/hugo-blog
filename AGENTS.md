@@ -173,7 +173,7 @@ hugo new post/my-article/index.md
 
 ---
 
-## 文章链接规范
+## 文章链接规范，强制要求
 
 在文章中引用其他文章时，必须使用 Hugo 的 `relref` shortcode 语法：
 
