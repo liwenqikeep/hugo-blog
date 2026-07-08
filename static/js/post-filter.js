@@ -124,23 +124,22 @@
         elements.postItems.forEach(item => {
             const title = item.dataset.title || '';
             const year = item.dataset.year || '';
-            const categories = (item.dataset.categories || '').trim().split(/\s+/).filter(Boolean);
-            const tags = (item.dataset.tags || '').trim().split(/\s+/).filter(Boolean);
 
             // 搜索匹配
             const searchMatch = !state.searchQuery || title.includes(state.searchQuery);
 
-            // 分类匹配
+            // 分类匹配（直接用字符串包含匹配，支持多词分类名如 "Spring Cloud"）
             const categoryMatch = state.selectedCategories.length === 0 || 
-                state.selectedCategories.some(cat => categories.includes(cat));
-
+                state.selectedCategories.some(cat => (item.dataset.categories || '').includes(cat));
+            
+            
             // 年份匹配
             const yearMatch = state.selectedYears.length === 0 || 
                 state.selectedYears.includes(year);
 
-            // 标签匹配
+            // 标签匹配（直接用字符串包含匹配，支持多词标签）
             const tagMatch = state.selectedTags.length === 0 || 
-                state.selectedTags.some(t => tags.includes(t));
+                state.selectedTags.some(t => (item.dataset.tags || '').includes(t));
 
             // 综合匹配
             const isVisible = searchMatch && categoryMatch && yearMatch && tagMatch;
