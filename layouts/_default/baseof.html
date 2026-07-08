@@ -8,16 +8,13 @@
     
     <!-- 样式 -->
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    <link rel="stylesheet" href="/css/highlight-monokai.min.css">
     
     <!-- 图标 -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <!-- <link rel="icon" type="image/x-icon" href="{{ .Site.Params.favicon | default "/fav.ico" }}"> -->
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- 本地字体 -->
+    <link rel="stylesheet" href="/fonts/fonts.css">
     
     {{ block "head" . }}{{ end }}
 </head>
@@ -36,7 +33,8 @@
     {{ partial "footer.html" . }}
     
     <!-- 脚本 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="/js/highlight.min.js"></script>
+    <script src="/js/languages/dockerfile.min.js"></script>
     <script>hljs.highlightAll();</script>
     <script src="/js/main.js"></script>
     <script src="/js/toc.js"></script>
