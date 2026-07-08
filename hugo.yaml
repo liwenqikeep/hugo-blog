@@ -23,8 +23,7 @@ markup:
     endLevel: 4
     ordered: false
   highlight:
-    noClasses: false
-    securityLevel: 'insecure'
+    codeFences: false
 
 params:
     author: Liwenqi

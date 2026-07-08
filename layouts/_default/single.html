@@ -1,45 +1,34 @@
 {{ define "main" }}
-<div class="post-layout">
-    {{ partial "toc.html" . }}
-    
-    <article class="post">
-        <header class="post-header">
-            <h1 class="post-title">{{ .Title }}</h1>
-            <div class="post-meta">
-                {{ if ne .Type "page" }}
-                <time class="post-date">{{ .Date.Format "2006-01-02" }}</time>
-                {{ end }}
-                {{ with .Params.categories }}
-                <span class="post-category">
-                    {{ range . }}
-                    <a href="/category/{{ . | urlize }}/" style="color: white;">{{ . }}</a>
-                    {{ end }}
-                </span>
-                {{ end }}
-            </div>
-        </header>
-
-        <div class="post-content">
-            {{ .Content }}
-        </div>
-
-        <footer class="post-footer">
-            {{ with .Params.tags }}
-            <div class="post-tags-section">
-                <div class="tags-header">
-                    <span class="tags-icon">🏷️</span>
-                    <span class="tags-title">标签</span>
-                </div>
-                <div class="tags-list">
-                    {{ range . }}
-                    <a href="/tag/{{ . | urlize }}/" class="tag">{{ . }}</a>
-                    {{ end }}
-                </div>
-            </div>
+<article>
+    <header>
+        <h1>{{ .Title }}</h1>
+        {{ if ne .Type "page" }}
+        <time>{{ .Date.Format "2006-01-02" }}</time>
+        {{ end }}
+        {{ with .Params.categories }}
+        <span>
+            {{ range . }}
+            <a href="/category/{{ . | urlize }}/">{{ . }}</a>
             {{ end }}
-        </footer>
-    </article>
-</div>
+        </span>
+        {{ end }}
+    </header>
 
-<!-- {{ partial "comments.html" . }} -->
+    <div>
+        {{ .Content }}
+    </div>
+
+    <footer>
+        {{ with .Params.tags }}
+        <div>
+            <span>标签</span>
+            <div>
+                {{ range . }}
+                <a href="/tag/{{ . | urlize }}/">{{ . }}</a>
+                {{ end }}
+            </div>
+        </div>
+        {{ end }}
+    </footer>
+</article>
 {{ end }}
